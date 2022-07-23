@@ -5,11 +5,16 @@ todo:
  - try using enum in cpp20
 */
 
+#include <signal.h>
+#include <stdio.h>
+
 #include <array>
 #include <iostream>
+#include <memory>
 
 using std::array;
 using std::cout;
+using std::unique_ptr;
 
 constexpr uint16_t max = 1 << 16;
 array<uint16_t, max> memory; // 128KB memory stored in this array
@@ -76,7 +81,7 @@ auto read_mem(uint16_t address) -> uint16_t {
   if (address == MemoryReg::MR_KBSR) {
     if (check_key()) {
       memory[MemoryReg::MR_KBSR] = (1 << 15);
-      memory[MemoryReg::MR_KBDR] = get_char();
+      memory[MemoryReg::MR_KBDR] = getchar();
     } else {
       memory[MemoryReg::MR_KBSR] = 0;
     }
@@ -106,6 +111,76 @@ auto update_flags(uint16_t idx) -> void {
 
 auto read_image(const char *image_path) -> int;
 
+inline auto trap_routines(uint16_t instruction, bool& is_running) -> void {
+  using enum Registers;
+  using enum TrapCodes;
+
+  registers[R_R7] = registers[R_PC];
+
+  switch (instruction) {
+  case TRAP_GETC: {
+    registers[R_R0] = static_cast<uint16_t> getchar();
+    update_flags(R_R0);
+    break;
+  }
+
+  case TRAP_OUT: {
+    putc(static_cast<char>(registers[R_R0]), stdout);
+    fflush(stdout);
+    break;
+  }
+
+  case TRAP_PUTS: {
+    unique_ptr<uint16_t> c = std::make_unique<uint16_t>(memory + registers[R0]);
+
+    while (*c) {
+      putc(static_cast<char>(*c), stdout);
+      ++c;
+    }
+
+    fflush(stdout);
+    break;
+  }
+
+  case TRAP_IN: {
+    cout << "Enter a caracter: ";
+
+    char c = getchar();
+    putc(c, stdout);
+    fflush(stdout);
+
+    registers[R_R0] = static_cast<uint16_t>(c);
+    update_flags(R_R0);
+
+    break;
+  }
+
+  case TRAP_PUTSP: {
+    unique_ptr<uint16_t> c =
+        std::make_unique<uint16_t>(memory + registers[R_R0]);
+
+    while (*c) {
+      char c1 = (*c) & 0xff;
+      putc(c1, stdout);
+      char c2 = (*c) >> 8;
+      if (c2) {
+        putc(c2, stdout);
+      }
+      ++c;
+    }
+    break;
+  }
+
+  case TRAP_HALT:{
+    puts("HALT");
+    fflush(stdout);
+    is_running = false;    
+    break;
+  }
+
+  }
+}
+
 auto run_vm() -> void {
   using enum Registers;
 
@@ -122,7 +197,7 @@ auto run_vm() -> void {
     switch (op) {
       using enum Opcode;
 
-    case OP_ADD:
+    case OP_ADD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t imm_flag = (instruction >> 5) & 0x1;
@@ -136,8 +211,8 @@ auto run_vm() -> void {
       }
       update_flags(r0);
       break;
-
-    case OP_AND:
+    }
+    case OP_AND: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t imm_flag = (instruction >> 5) & 0x1;
@@ -148,28 +223,28 @@ auto run_vm() -> void {
       }
       update_flags(r0);
       break;
-
-    case OP_NOT:
+    }
+    case OP_NOT: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
 
       registers[r0] = ~registers[r1];
       update_flags(r0);
       break;
-
-    case OP_BR:
+    }
+    case OP_BR: {
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
       uint16_t cond_flag = (instruction >> 9) & 0x7;
       if (cond_flag & registers[R_COND])
         registers[R_PC] += pc_offset;
       break;
-
-    case OP_JMT:
+    }
+    case OP_JMT: {
       uint16_t r1 = (instruction >> 6) & 0x7;
       registers[R_PC] = registers[r1];
       break;
-
-    case OP_JSR:
+    }
+    case OP_JSR: {
       uint16_t long_flag = (instruction >> 11) & 1;
       registers[R_R7] = registers[R_PC];
 
@@ -181,32 +256,32 @@ auto run_vm() -> void {
         registers[R_PC] = registers[r1];
       }
       break;
-
-    case OP_LD:
+    }
+    case OP_LD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       registers[r0] = read_mem(registers[R_PC] + pc_offset);
       update_flags(r0);
       break;
-
-    case OP_LDI:
+    }
+    case OP_LDI: {
       uint16_t r0 = (instruction >> 9) & 0x07;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       registers[r0] = read_mem(read_mem(registers[R_PC] + pc_offset));
       update_flags(r0);
       break;
-
-    case OP_LD:
+    }
+    case OP_LD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
 
       registers[r0] = read_mem(registers[R_PC] + pc_offset);
       update_flags(r0);
       break;
-
-    case OP_LDR:
+    }
+    case OP_LDR: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t offset = extend_sign(instruction & ox3f, 6);
@@ -215,8 +290,8 @@ auto run_vm() -> void {
       update_flags(r0);
 
       break;
-
-    case OP_LEA:
+    }
+    case OP_LEA: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
@@ -224,21 +299,22 @@ auto run_vm() -> void {
       update_flags(r0);
 
       break;
-    case OP_ST:
+    }
+    case OP_ST: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       write_mem(registers[R_PC] + pc_offset, registers[r0]); // redundant?
       break;
-
-    case OP_STI:
+    }
+    case OP_STI: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       write_mem(read_mem(registers[R_PC] + pc_offset), registers[r0]);
       break;
-
-    case OP_STR:
+    }
+    case OP_STR: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t offset = extend_sign(instruction & 0x3F, 6);
@@ -246,6 +322,7 @@ auto run_vm() -> void {
       write_mem(registers[r1] + offset, registers[r0]);
 
       break;
+    }
     default:
       break;
     }
