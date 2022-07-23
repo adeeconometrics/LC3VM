@@ -2,6 +2,7 @@
 #define __LC3_H__
 
 #include <array>
+#include <memory>
 
 using std::array;
 
@@ -75,6 +76,10 @@ auto extend_sign(uint16_t x, int bit_count) -> uint16_t;
 auto update_flags(uint16_t idx) -> void;
 
 auto read_image(const char *image_path) -> int;
+
+auto read_image_file(std::unique<FILE> file) -> void;
+
+auto swap_16(uint16_t x) -> uint16_t;
 
 auto trap_routines(uint16_t instruction) -> void;
 

@@ -109,7 +109,35 @@ auto update_flags(uint16_t idx) -> void {
     registers[Registers::R_COND] = Flags::FL_POS;
 }
 
-auto read_image(const char *image_path) -> int;
+auto swap_16(uint16_t x) -> uint16_t {
+  return (x << 8) | (x >> 8);
+}
+
+auto read_image_file(unique_ptr<FILE> file) -> void {
+  uint16_t origin;
+  fread(&origin, sizeof(uint16_t), 1, file);
+  origin = swap_16(origin);
+
+  uint16_t max_read = max - origin;
+  unique_ptr<uint16_t> p = memory + origin;
+  size_t read = fread(p, sizeof(uint16_t), max_read, file);
+
+  while(read > 0) {
+    *p = swap_16(*p);
+    ++p;
+
+    read --;
+  }
+}
+
+auto read_image(const char *image_path) -> int {
+  unique_ptr<FILE> file = std::make_unique<FILE>(fopen(image_path, "rb"));
+  if(!file) return 0;
+  
+  read_image_file(file);
+  fclose(file);
+  return 1; 
+}
 
 inline auto trap_routines(uint16_t instruction, bool& is_running) -> void {
   using enum Registers;
