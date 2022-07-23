@@ -1,0 +1,3 @@
+/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/LC3VM.dir

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/L3.cpp
+signal.h
+-
+stdio.h
+-
+array
+-
+iostream
+-
+memory
+-
+

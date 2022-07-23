@@ -16,11 +16,11 @@ using std::array;
 using std::cout;
 using std::unique_ptr;
 
-constexpr uint16_t max = 1 << 16;
+constexpr uint32_t max = 1 << 16;
 array<uint16_t, max> memory; // 128KB memory stored in this array
 
 // registers
-enum class Registers : uint16_t {
+enum class Registers : size_t {
   R_R0,
   R_R1,
   R_R2,
@@ -38,7 +38,7 @@ enum class Registers : uint16_t {
 array<uint16_t, 10> registers;
 
 // memory mapped registers
-enum class MappedReg : uint16_t { MR_KBSR = 0xFE00, MR_KBDR = 0xFE02 };
+enum class MappedReg : size_t { MR_KBSR = 0xFE00, MR_KBDR = 0xFE02 };
 
 // instruction set definition
 enum class Opcodes : uint16_t {
@@ -78,12 +78,12 @@ enum class TrapCodes : uint16_t {
 };
 
 auto read_mem(uint16_t address) -> uint16_t {
-  if (address == MemoryReg::MR_KBSR) {
+  if (address == MappedReg::MR_KBSR) {
     if (check_key()) {
-      memory[MemoryReg::MR_KBSR] = (1 << 15);
-      memory[MemoryReg::MR_KBDR] = getchar();
+      memory[MappedReg::MR_KBSR] = (1 << 15);
+      memory[MappedReg::MR_KBDR] = getchar();
     } else {
-      memory[MemoryReg::MR_KBSR] = 0;
+      memory[MappedReg::MR_KBSR] = 0;
     }
   }
   return memory[address];
@@ -109,9 +109,7 @@ auto update_flags(uint16_t idx) -> void {
     registers[Registers::R_COND] = Flags::FL_POS;
 }
 
-auto swap_16(uint16_t x) -> uint16_t {
-  return (x << 8) | (x >> 8);
-}
+auto swap_16(uint16_t x) -> uint16_t { return (x << 8) | (x >> 8); }
 
 auto read_image_file(unique_ptr<FILE> file) -> void {
   uint16_t origin;
@@ -122,44 +120,45 @@ auto read_image_file(unique_ptr<FILE> file) -> void {
   unique_ptr<uint16_t> p = memory + origin;
   size_t read = fread(p, sizeof(uint16_t), max_read, file);
 
-  while(read > 0) {
+  while (read > 0) {
     *p = swap_16(*p);
     ++p;
 
-    read --;
+    read--;
   }
 }
 
 auto read_image(const char *image_path) -> int {
   unique_ptr<FILE> file = std::make_unique<FILE>(fopen(image_path, "rb"));
-  if(!file) return 0;
-  
+  if (!file)
+    return 0;
+
   read_image_file(file);
   fclose(file);
-  return 1; 
+  return 1;
 }
 
-inline auto trap_routines(uint16_t instruction, bool& is_running) -> void {
-  using enum Registers;
-  using enum TrapCodes;
+inline auto trap_routines(uint16_t instruction, bool &is_running) -> void {
+  // using enum Registers;
+  // using enum TrapCodes;
 
-  registers[R_R7] = registers[R_PC];
+  registers[Registers::R_R7] = registers[Registers::R_PC];
 
   switch (instruction) {
-  case TRAP_GETC: {
-    registers[R_R0] = static_cast<uint16_t> getchar();
-    update_flags(R_R0);
+  case TrapCodes::TRAP_GETC: {
+    registers[Registers::R_R0] = static_cast<uint16_t> getchar();
+    update_flags(Registers::R_R0);
     break;
   }
 
-  case TRAP_OUT: {
-    putc(static_cast<char>(registers[R_R0]), stdout);
+  case TrapCodes::TRAP_OUT: {
+    putc(static_cast<char>(registers[Registers::R_R0]), stdout);
     fflush(stdout);
     break;
   }
 
-  case TRAP_PUTS: {
-    unique_ptr<uint16_t> c = std::make_unique<uint16_t>(memory + registers[R0]);
+  case TrapCodes::TRAP_PUTS: {
+    unique_ptr<uint16_t> c = std::make_unique<uint16_t>(memory + registers[Registers::R0]);
 
     while (*c) {
       putc(static_cast<char>(*c), stdout);
@@ -170,22 +169,22 @@ inline auto trap_routines(uint16_t instruction, bool& is_running) -> void {
     break;
   }
 
-  case TRAP_IN: {
+  case TrapCodes::TRAP_IN: {
     cout << "Enter a caracter: ";
 
     char c = getchar();
     putc(c, stdout);
     fflush(stdout);
 
-    registers[R_R0] = static_cast<uint16_t>(c);
-    update_flags(R_R0);
+    registers[Registers::R_R0] = static_cast<uint16_t>(c);
+    update_flags(Registers::R_R0);
 
     break;
   }
 
-  case TRAP_PUTSP: {
+  case TrapCodes::TRAP_PUTSP: {
     unique_ptr<uint16_t> c =
-        std::make_unique<uint16_t>(memory + registers[R_R0]);
+        std::make_unique<uint16_t>(memory + registers[Registers::R_R0]);
 
     while (*c) {
       char c1 = (*c) & 0xff;
@@ -199,18 +198,18 @@ inline auto trap_routines(uint16_t instruction, bool& is_running) -> void {
     break;
   }
 
-  case TRAP_HALT:{
+  case TrapCodes::TRAP_HALT: {
     puts("HALT");
     fflush(stdout);
-    is_running = false;    
+    is_running = false;
     break;
   }
-
   }
 }
 
 auto run_vm() -> void {
   using enum Registers;
+  // using enum Opcode;
 
   registers[R_COND] = Flags::FL_ZRO;
   constexpr uint16_t PC_START = 0x3000;
@@ -223,9 +222,7 @@ auto run_vm() -> void {
     auto op = instruction >> 12;
 
     switch (op) {
-      using enum Opcode;
-
-    case OP_ADD: {
+    case Opcodes::OP_ADD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t imm_flag = (instruction >> 5) & 0x1;
@@ -240,7 +237,7 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_AND: {
+    case Opcodes::OP_AND: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t imm_flag = (instruction >> 5) & 0x1;
@@ -252,7 +249,7 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_NOT: {
+    case Opcodes::OP_NOT: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
 
@@ -260,19 +257,19 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_BR: {
+    case Opcodes::OP_BR: {
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
       uint16_t cond_flag = (instruction >> 9) & 0x7;
       if (cond_flag & registers[R_COND])
         registers[R_PC] += pc_offset;
       break;
     }
-    case OP_JMT: {
+    case Opcodes::OP_JMT: {
       uint16_t r1 = (instruction >> 6) & 0x7;
       registers[R_PC] = registers[r1];
       break;
     }
-    case OP_JSR: {
+    case Opcodes::OP_JSR: {
       uint16_t long_flag = (instruction >> 11) & 1;
       registers[R_R7] = registers[R_PC];
 
@@ -285,7 +282,7 @@ auto run_vm() -> void {
       }
       break;
     }
-    case OP_LD: {
+    case Opcodes::OP_LD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
@@ -293,7 +290,7 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_LDI: {
+    case Opcodes::OP_LDI: {
       uint16_t r0 = (instruction >> 9) & 0x07;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
@@ -301,7 +298,7 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_LD: {
+    case Opcodes::OP_LD: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
 
@@ -309,7 +306,7 @@ auto run_vm() -> void {
       update_flags(r0);
       break;
     }
-    case OP_LDR: {
+    case Opcodes::OP_LDR: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t offset = extend_sign(instruction & ox3f, 6);
@@ -319,7 +316,7 @@ auto run_vm() -> void {
 
       break;
     }
-    case OP_LEA: {
+    case Opcodes::OP_LEA: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
@@ -328,21 +325,21 @@ auto run_vm() -> void {
 
       break;
     }
-    case OP_ST: {
+    case Opcodes::OP_ST: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       write_mem(registers[R_PC] + pc_offset, registers[r0]); // redundant?
       break;
     }
-    case OP_STI: {
+    case Opcodes::OP_STI: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t pc_offset = extend_sign(instruction & 0x1FF, 9);
 
       write_mem(read_mem(registers[R_PC] + pc_offset), registers[r0]);
       break;
     }
-    case OP_STR: {
+    case Opcodes::OP_STR: {
       uint16_t r0 = (instruction >> 9) & 0x7;
       uint16_t r1 = (instruction >> 6) & 0x7;
       uint16_t offset = extend_sign(instruction & 0x3F, 6);
@@ -362,7 +359,7 @@ auto main(int argc, const char *argv[]) -> int {
     cout << "lc3 [image-file] ... \n";
     exit(2);
   } else {
-    for (size_t i = 1; j < argc; ++j) {
+    for (int i = 1; i < argc; ++i) {
       if (!read_image(argv[i])) {
         cout << "failed to load image: " << argv[i] << '\n';
         exit(1);
