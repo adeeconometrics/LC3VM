@@ -4,8 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/L3.cpp" "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/LC3VM.dir/src/L3.cpp.o"
   "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/LC3.cpp" "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/LC3VM.dir/src/LC3.cpp.o"
+  "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/Specifics.cpp" "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/LC3VM.dir/src/Specifics.cpp.o"
+  "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/main.cpp" "/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles/LC3VM.dir/src/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

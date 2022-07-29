@@ -1,13 +1,10 @@
-// VM will simulate L3 architecture
+// VM will emulate LC3 CPU architecture
 
-/*
-todo:
- - try using enum in cpp20
-*/
+#include "Specifics.h"
+#include "LC3.h"
 
 #include <signal.h>
 #include <stdio.h>
-
 #include <cstdint>
 
 #include <array>
@@ -18,128 +15,12 @@ using std::array;
 using std::cout;
 using std::unique_ptr;
 
-#if defined(_WIN32) || defined(_WIN64)
-
-#include <Windows.h>
-#include <conio.h>
-
-HANDLE handle = INVALID_HANDLE_VALUE;
-DWORD fdw_mode, fdw_old_mode;
-
-auto disable_input_buffering() -> void {
-  handle = GetStdHandle(STD_INPUT_HANDLE);
-  GetConsoleMode(handle, &fdw_old_mode);      /* save old mode */
-  fdw_mode = fdw_old_mode ^ ENABLE_ECHO_INPUT /* no input echo */
-             ^ ENABLE_LINE_INPUT;             /* return when one or
-                                               more characters are available */
-  SetConsoleMode(handle, fdw_mode);           /* set new mode */
-  FlushConsoleInputBuffer(handle);            /* clear buffer */
-}
-
-auto restore_input_buffering() -> void { SetConsoleMode(handle, fdw_old_mode); }
-
-auto check_key() -> uint16_t {
-  return WaitForSingleObject(handle, 1000) == WAIT_OBJECT_0 && _kbhit();
-}
-
-#elif defined(__linux__) || defined(__unix__)
-
-#include <fcntl.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/termios.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-static struct termios original_tio;
-
-auto disable_input_buffering() -> void {
-  tcgetattr(STDIN_FILENO, &original_tio);
-  struct termios new_tio = original_tio;
-  new_tio.c_lflag &= ~ICANON & ~ECHO;
-  tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
-}
-
-auto restore_input_buffering() -> void {
-  tcsetattr(STDIN_FILENO, TCSANOW, &original_tio);
-}
-
-auto check_key() -> uint16_t {
-  fd_set readfds;
-  FD_ZERO(&readfds);
-  FD_SET(STDIN_FILENO, &readfds);
-
-  struct timeval timeout;
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 0;
-  return select(1, &readfds, NULL, NULL, &timeout) != 0;
-}
-#endif
 
 constexpr uint32_t max = 1 << 16;
-array<uint16_t, max> memory; // 128KB memory stored in this array
-
-// registers
-namespace Registers {
-constexpr uint16_t R_R0 = 0;
-constexpr uint16_t R_R1 = 1;
-constexpr uint16_t R_R2 = 2;
-constexpr uint16_t R_R3 = 3;
-constexpr uint16_t R_R4 = 4;
-constexpr uint16_t R_R5 = 5;
-constexpr uint16_t R_R6 = 6;
-constexpr uint16_t R_R7 = 7;
-constexpr uint16_t R_PC = 8;
-constexpr uint16_t R_COND = 9;
-constexpr uint16_t R_COUNT = 10;
-} // namespace Registers
+array<uint16_t, max> memory; // 128KB memory store
 
 // storing registers
 array<uint16_t, 10> registers;
-
-// memory mapped registers
-namespace MappedReg {
-constexpr uint16_t MR_KBSR = 0xfe00;
-constexpr uint16_t MR_KBDR = 0xfe02;
-} // namespace MappedReg
-
-// instruction set definition
-namespace Opcodes {
-constexpr uint16_t OP_BR = 0;    /* branch */
-constexpr uint16_t OP_ADD = 1;   /* add */
-constexpr uint16_t OP_LD = 2;    /* load */
-constexpr uint16_t OP_ST = 3;    /* store */
-constexpr uint16_t OP_JSR = 4;   /* jump register */
-constexpr uint16_t OP_AND = 5;   /* bitwise and */
-constexpr uint16_t OP_LDR = 6;   /* load register */
-constexpr uint16_t OP_STR = 7;   /* store register */
-constexpr uint16_t OP_RTI = 8;   /* unused */
-constexpr uint16_t OP_NOT = 9;   /* bitwise not */
-constexpr uint16_t OP_LDI = 10;  /* load indirect */
-constexpr uint16_t OP_STI = 11;  /* store indirect */
-constexpr uint16_t OP_JMP = 12;  /* jump */
-constexpr uint16_t OP_RES = 13;  /* reserved (unused) */
-constexpr uint16_t OP_LEA = 14;  /* load effective address */
-constexpr uint16_t OP_TRAP = 15; /* execute trap */
-}                               // namespace Opcodes
-
-// conditional  flags
-namespace Flags {
-constexpr uint16_t FL_POS = 1 << 0; /* P */
-constexpr uint16_t FL_ZRO = 1 << 1; /* Z */
-constexpr uint16_t FL_NEG = 1 << 2; /* N */
-}                                  // namespace Flags
-
-// trap codes
-namespace TrapCodes {
-constexpr uint16_t TRAP_GETC = 0x20;
-constexpr uint16_t TRAP_OUT = 0x21;
-constexpr uint16_t TRAP_PUTS = 0x22;
-constexpr uint16_t TRAP_IN = 0x23;
-constexpr uint16_t TRAP_PUTSP = 0x24;
-constexpr uint16_t TRAP_HALT = 0x25;
-} // namespace TrapCodes
 
 auto read_mem(uint16_t address) -> uint16_t {
   if (address == MappedReg::MR_KBSR) {
@@ -175,8 +56,7 @@ auto update_flags(uint16_t idx) -> void {
 
 auto swap_16(uint16_t x) -> uint16_t { return (x << 8) | (x >> 8); }
 
-void handle_interrupt(int signal)
-{
+auto handle_interrupt(int signal) -> void {
     restore_input_buffering();
     cout << '\n';
     exit(-2);
@@ -210,35 +90,8 @@ auto read_image(const char *image_path) -> int {
     return 0;
 
   read_image_file(file.get());
-  // fclose(file);
   return 1;
 }
-
-// void read_image_file(FILE *file) {
-//   /* the origin tells us where in memory to place the image */
-//   uint16_t origin;
-//   fread(&origin, sizeof(origin), 1, file);
-//   origin = swap_16(origin);
-
-//   /* we know the maximum file size so we only need one fread */
-//   uint16_t max_read = max - origin;
-//   uint16_t *p = &memory[origin];
-//   size_t read = fread(p, sizeof(uint16_t), max_read, file);
-
-//   /* swap to little endian */
-//   while (read-- > 0) {
-//     *p = swap_16(*p);
-//     ++p;
-//   }
-// }
-
-// int read_image(const char* image_path){
-//     FILE* file = fopen(image_path, "rb");
-//     if (!file) { return 0; };
-//     read_image_file(file);
-//     fclose(file);
-//     return 1;
-// }
 
 inline auto trap_routines(uint16_t& instruction, bool &is_running) -> void {
 
@@ -426,24 +279,4 @@ auto run_vm() -> void {
     }
     // is_running = false;
   }
-}
-
-auto main(int argc, const char *argv[]) -> int {
-  if (argc < 2) {
-    cout << "lc3 [image-file] ... \n";
-    exit(2);
-  } 
-  for (int i = 1; i < argc; ++i) {
-    if (!read_image(argv[i])) {
-      cout << "failed to load image: " << argv[i] << '\n';
-      exit(1);
-    }
-  }
-  signal(SIGINT, handle_interrupt);
-  disable_input_buffering();
-  
-  // std::cout << "VM is running!";
-  run_vm();
-
-  restore_input_buffering();
 }

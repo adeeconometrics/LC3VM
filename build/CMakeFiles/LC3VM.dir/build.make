@@ -57,22 +57,9 @@ include CMakeFiles/LC3VM.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/LC3VM.dir/flags.make
 
-CMakeFiles/LC3VM.dir/src/L3.cpp.o: CMakeFiles/LC3VM.dir/flags.make
-CMakeFiles/LC3VM.dir/src/L3.cpp.o: ../src/L3.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/LC3VM.dir/src/L3.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LC3VM.dir/src/L3.cpp.o -c /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/L3.cpp
-
-CMakeFiles/LC3VM.dir/src/L3.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LC3VM.dir/src/L3.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/L3.cpp > CMakeFiles/LC3VM.dir/src/L3.cpp.i
-
-CMakeFiles/LC3VM.dir/src/L3.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LC3VM.dir/src/L3.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/L3.cpp -o CMakeFiles/LC3VM.dir/src/L3.cpp.s
-
 CMakeFiles/LC3VM.dir/src/LC3.cpp.o: CMakeFiles/LC3VM.dir/flags.make
 CMakeFiles/LC3VM.dir/src/LC3.cpp.o: ../src/LC3.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/LC3VM.dir/src/LC3.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/LC3VM.dir/src/LC3.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LC3VM.dir/src/LC3.cpp.o -c /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/LC3.cpp
 
 CMakeFiles/LC3VM.dir/src/LC3.cpp.i: cmake_force
@@ -83,19 +70,47 @@ CMakeFiles/LC3VM.dir/src/LC3.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LC3VM.dir/src/LC3.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/LC3.cpp -o CMakeFiles/LC3VM.dir/src/LC3.cpp.s
 
+CMakeFiles/LC3VM.dir/src/Specifics.cpp.o: CMakeFiles/LC3VM.dir/flags.make
+CMakeFiles/LC3VM.dir/src/Specifics.cpp.o: ../src/Specifics.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/LC3VM.dir/src/Specifics.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LC3VM.dir/src/Specifics.cpp.o -c /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/Specifics.cpp
+
+CMakeFiles/LC3VM.dir/src/Specifics.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LC3VM.dir/src/Specifics.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/Specifics.cpp > CMakeFiles/LC3VM.dir/src/Specifics.cpp.i
+
+CMakeFiles/LC3VM.dir/src/Specifics.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LC3VM.dir/src/Specifics.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/Specifics.cpp -o CMakeFiles/LC3VM.dir/src/Specifics.cpp.s
+
+CMakeFiles/LC3VM.dir/src/main.cpp.o: CMakeFiles/LC3VM.dir/flags.make
+CMakeFiles/LC3VM.dir/src/main.cpp.o: ../src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/LC3VM.dir/src/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LC3VM.dir/src/main.cpp.o -c /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/main.cpp
+
+CMakeFiles/LC3VM.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LC3VM.dir/src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/main.cpp > CMakeFiles/LC3VM.dir/src/main.cpp.i
+
+CMakeFiles/LC3VM.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LC3VM.dir/src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/src/main.cpp -o CMakeFiles/LC3VM.dir/src/main.cpp.s
+
 # Object files for target LC3VM
 LC3VM_OBJECTS = \
-"CMakeFiles/LC3VM.dir/src/L3.cpp.o" \
-"CMakeFiles/LC3VM.dir/src/LC3.cpp.o"
+"CMakeFiles/LC3VM.dir/src/LC3.cpp.o" \
+"CMakeFiles/LC3VM.dir/src/Specifics.cpp.o" \
+"CMakeFiles/LC3VM.dir/src/main.cpp.o"
 
 # External object files for target LC3VM
 LC3VM_EXTERNAL_OBJECTS =
 
-LC3VM: CMakeFiles/LC3VM.dir/src/L3.cpp.o
 LC3VM: CMakeFiles/LC3VM.dir/src/LC3.cpp.o
+LC3VM: CMakeFiles/LC3VM.dir/src/Specifics.cpp.o
+LC3VM: CMakeFiles/LC3VM.dir/src/main.cpp.o
 LC3VM: CMakeFiles/LC3VM.dir/build.make
 LC3VM: CMakeFiles/LC3VM.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable LC3VM"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/amianadave/Documents/VMProjects/LC3VM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable LC3VM"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/LC3VM.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

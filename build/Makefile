@@ -123,33 +123,6 @@ LC3VM/fast:
 	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/build
 .PHONY : LC3VM/fast
 
-src/L3.o: src/L3.cpp.o
-
-.PHONY : src/L3.o
-
-# target to build an object file
-src/L3.cpp.o:
-	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/L3.cpp.o
-.PHONY : src/L3.cpp.o
-
-src/L3.i: src/L3.cpp.i
-
-.PHONY : src/L3.i
-
-# target to preprocess a source file
-src/L3.cpp.i:
-	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/L3.cpp.i
-.PHONY : src/L3.cpp.i
-
-src/L3.s: src/L3.cpp.s
-
-.PHONY : src/L3.s
-
-# target to generate assembly for a file
-src/L3.cpp.s:
-	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/L3.cpp.s
-.PHONY : src/L3.cpp.s
-
 src/LC3.o: src/LC3.cpp.o
 
 .PHONY : src/LC3.o
@@ -177,6 +150,60 @@ src/LC3.cpp.s:
 	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/LC3.cpp.s
 .PHONY : src/LC3.cpp.s
 
+src/Specifics.o: src/Specifics.cpp.o
+
+.PHONY : src/Specifics.o
+
+# target to build an object file
+src/Specifics.cpp.o:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/Specifics.cpp.o
+.PHONY : src/Specifics.cpp.o
+
+src/Specifics.i: src/Specifics.cpp.i
+
+.PHONY : src/Specifics.i
+
+# target to preprocess a source file
+src/Specifics.cpp.i:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/Specifics.cpp.i
+.PHONY : src/Specifics.cpp.i
+
+src/Specifics.s: src/Specifics.cpp.s
+
+.PHONY : src/Specifics.s
+
+# target to generate assembly for a file
+src/Specifics.cpp.s:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/Specifics.cpp.s
+.PHONY : src/Specifics.cpp.s
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/LC3VM.dir/build.make CMakeFiles/LC3VM.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +213,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... LC3VM"
-	@echo "... src/L3.o"
-	@echo "... src/L3.i"
-	@echo "... src/L3.s"
 	@echo "... src/LC3.o"
 	@echo "... src/LC3.i"
 	@echo "... src/LC3.s"
+	@echo "... src/Specifics.o"
+	@echo "... src/Specifics.i"
+	@echo "... src/Specifics.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

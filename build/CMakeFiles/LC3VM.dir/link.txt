@@ -1,1 +1,1 @@
-/usr/bin/c++  -Wall -Wextra -pedantic -Werror   CMakeFiles/LC3VM.dir/src/L3.cpp.o CMakeFiles/LC3VM.dir/src/LC3.cpp.o  -o LC3VM 
+/usr/bin/c++  -Wall -Wextra -pedantic   CMakeFiles/LC3VM.dir/src/LC3.cpp.o CMakeFiles/LC3VM.dir/src/Specifics.cpp.o CMakeFiles/LC3VM.dir/src/main.cpp.o  -o LC3VM 
