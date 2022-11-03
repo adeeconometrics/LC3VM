@@ -1,5 +1,5 @@
 #include "Specifics.h"
-#include "LC3.H"
+#include "LC3.h"
 
 #include <iostream>
 #include <signal.h>

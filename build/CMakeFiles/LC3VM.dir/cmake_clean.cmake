@@ -1,7 +1,10 @@
 file(REMOVE_RECURSE
   "CMakeFiles/LC3VM.dir/src/LC3.cpp.o"
+  "CMakeFiles/LC3VM.dir/src/LC3.cpp.o.d"
   "CMakeFiles/LC3VM.dir/src/Specifics.cpp.o"
+  "CMakeFiles/LC3VM.dir/src/Specifics.cpp.o.d"
   "CMakeFiles/LC3VM.dir/src/main.cpp.o"
+  "CMakeFiles/LC3VM.dir/src/main.cpp.o.d"
   "LC3VM"
   "LC3VM.pdb"
 )

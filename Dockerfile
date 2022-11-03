@@ -1,8 +1,14 @@
 from gcc:12.1.0
 
-run sudo apt-get -y update 
-run sudo apt-get -y nstall cmake 
+run apt-get -y update 
+run apt-get -y install cmake 
 
-workdir /home
 
-run pwd
+copy . /usr/src/app
+workdir /usr/src/app
+
+run rm -r build
+run cmake -S . -B build 
+run cd build && make .
+
+cmd ["./LC3VM", "../Programs/2028.obj"]
